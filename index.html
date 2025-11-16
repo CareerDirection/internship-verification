@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Certificate Verification</title>
+
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align:center; 
+      margin:40px; 
+    }
+    input { 
+      padding:10px; 
+      width:260px; 
+      font-size:16px; 
+      margin-right:10px;
+    }
+    button { 
+      padding:10px 15px; 
+      font-size:16px; 
+      cursor:pointer; 
+    }
+    #result {
+      margin-top:25px;
+      max-width:520px;
+      margin-left:auto;
+      margin-right:auto;
+      text-align:left;
+      font-size:18px;
+    }
+    .valid { color:green; font-weight:bold; }
+    .invalid { color:red; font-weight:bold; }
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <div style="text-align:center; margin-bottom:20px;">
+    <img src="logo.png" width="250" height="100" alt="Career Direction Logo">
+  </div>
+
+  <h1>Internship Certificate Verification</h1>
+
+  <p style="margin-top: 10px; margin-bottom: 20px;">
+    Enter your Internship Certificate ID below.
+  </p>
+
+  <!-- Updated placeholder -->
+  <input 
+    id="certID" 
+    type="text" 
+    placeholder="Enter Cert-ID (CDINTE2025-000)"
+  />
+  <button onclick="verify()">Verify</button>
+
+  <div id="result"></div>
+
+<script>
+  const WORKER_URL = "https://internship-verification.cd-careerdirection.workers.dev";
+
+  async function verify() {
+    const certID = document.getElementById("certID").value.trim();
+    const resultDiv = document.getElementById("result");
+
+    if (!certID) {
+      resultDiv.innerHTML = "<p class='invalid'>Please enter a Certificate ID.</p>";
+      return;
+    }
+
+    resultDiv.innerHTML = "<em>Checking…</em>";
+
+    try {
+      const response = await fetch(`${WORKER_URL}/?id=${encodeURIComponent(certID)}`);
+      const data = await response.json();
+
+      if (data && data.id) {
+        resultDiv.innerHTML = `
+          <p class="valid">✔ Internship Certificate Verified</p>
+
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Certificate ID:</strong> ${data.id}</p>
+          <p><strong>Internship:</strong> ${data.internship}</p>
+          <p><strong>Duration:</strong> ${data.duration}</p>
+
+          <p><strong>College:</strong> ${data.college}</p>
+          <p><strong>Location:</strong> ${data.location}</p>
+
+          <p><strong>Project Status:</strong> ${data.project_status}</p>
+
+          <p><strong>Issuer:</strong> ${data.issuer}</p>
+          <p><strong>Status:</strong> ${data.status}</p>
+
+          <hr>
+          <p style="font-size:20px; font-weight:bold; text-align:center;">
+            😊 Wish You Continued Success!
+          </p>
+        `;
+      } else {
+        resultDiv.innerHTML = "<p class='invalid'>❌ Certificate not found or invalid.</p>";
+      }
+
+    } catch (err) {
+      resultDiv.innerHTML = "<p class='invalid'>Error contacting server.</p>";
+    }
+  }
+
+  const urlID = new URLSearchParams(window.location.search).get("id");
+  if (urlID) {
+    document.getElementById("certID").value = urlID;
+    verify();
+  }
+</script>
+
+</body>
+</html>
