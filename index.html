@@ -32,6 +32,14 @@
     }
     .valid { color:green; font-weight:bold; }
     .invalid { color:red; font-weight:bold; }
+
+    /* Footer Styling */
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -47,7 +55,6 @@
     Enter your Internship Certificate ID below.
   </p>
 
-  <!-- Updated placeholder -->
   <input 
     id="certID" 
     type="text" 
@@ -56,6 +63,10 @@
   <button onclick="verify()">Verify</button>
 
   <div id="result"></div>
+
+  <footer>
+    © Career Direction - All Rights Reserved
+  </footer>
 
 <script>
   const WORKER_URL = "https://internship-verification.cd-careerdirection.workers.dev";
