@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Certificate Verification</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 40px;
+    }
+    input {
+      padding: 10px;
+      width: 280px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 25px;
+      max-width: 750px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .valid {
+      color: green;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: center;
+    }
+    .invalid {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+    }
+    .statement {
+      margin-top: 15px;
+      text-align: justify;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Logo -->
+  <div style="margin-bottom:20px;">
+    <img src="logo.png" width="250" height="100" alt="Career Direction Logo">
+  </div>
+
+  <h1>Internship Certificate Verification</h1>
+
+  <p>Enter your Internship Certificate ID below.</p>
+
+  <input
+    id="certID"
+    type="text"
+    placeholder="Enter Cert-ID (CDINTE2025-000)"
+  />
+  <button onclick="verify()">Verify</button>
+
+  <div id="result"></div>
+
+  <footer>
+    © Career Direction – All Rights Reserved
+  </footer>
+
+  <script>
+    const WORKER_URL = "https://internship-verification.cd-careerdirection.workers.dev";
+
+    async function verify() {
+      const certID = document.getElementById("certID").value.trim();
+      const resultDiv = document.getElementById("result");
+
+      if (!certID) {
+        resultDiv.innerHTML = "<p class='invalid'>Please enter a Certificate ID.</p>";
+        return;
+      }
+
+      resultDiv.innerHTML = "<em>Verifying certificate…</em>";
+
+      try {
+        const response = await fetch(`${WORKER_URL}/?id=${encodeURIComponent(certID)}`);
+        const data = await response.json();
+
+        if (data && data.id) {
+          resultDiv.innerHTML = `
+            <p class="valid">✔ Certificate Verified Successfully</p>
+
+            <p><strong>Student Name:</strong> ${data.name}</p>
+            <p><strong>College Name:</strong> ${data.college}</p>
+            <p><strong>Internship Program:</strong> ${data.internship_program}</p>
+            <p><strong>Certificate ID:</strong> ${data.id}</p>
+
+            <p><strong>Internship Period:</strong><br>
+              Start Date: ${data.start_date || "—"}<br>
+              End Date: ${data.end_date || "—"}
+            </p>
+
+            <p><strong>Total Duration:</strong> ${data.total_duration}</p>
+            <p><strong>Project Status:</strong> ${data.project_status}</p>
+            <p><strong>Issuing Organization:</strong> ${data.issuer}</p>
+            <p><strong>Certificate Status:</strong> ${data.certificate_status}</p>
+
+            <hr>
+
+            <div class="statement">
+              <strong>Statement:</strong>
+              <p>${data.statement}</p>
+            </div>
+
+            <hr>
+
+            <p style="font-size:18px; font-weight:bold; text-align:center;">
+              🎉 Wish You Continued Success!
+            </p>
+          `;
+        } else {
+          resultDiv.innerHTML = "<p class='invalid'>❌ Certificate not found or invalid.</p>";
+        }
+
+      } catch (error) {
+        resultDiv.innerHTML = "<p class='invalid'>Error contacting verification server.</p>";
+      }
+    }
+
+    // Auto-verify if ID is in URL
+    const urlID = new URLSearchParams(window.location.search).get("id");
+    if (urlID) {
+      document.getElementById("certID").value = urlID;
+      verify();
+    }
+  </script>
+
+</body>
+</html>
